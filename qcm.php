@@ -3,7 +3,7 @@
 function init(){
   $qcm_name = $_GET["n"];
   $data = retrieveData($qcm_name);
-  $html = buildQCM($data,false);
+  $html = buildQCM($data);
   dispPage($html);
 }
 
