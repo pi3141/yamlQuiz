@@ -3,7 +3,7 @@
 function init(){
   $qcm_name = $_GET["n"];
   $data = retrieveData($qcm_name);
-  $html = buildQCM($data,false);
+  $html = buildQCM($data);
   dispPage($html);
 }
 
@@ -43,12 +43,12 @@ EOF;
   $questionIndex = 0;
   $shuffledQuestionsData = $data['questions'];
   shuffle($shuffledQuestionsData);
-  $html .= "    <form id=\"qcmForm\"method=\"POST\" action=".htmlspecialchars($_SERVER["PHP_SELF"])."?n=".$_GET['n'].">\n";
+  $html .= "    <form id=\"qcmForm\" method=\"POST\" action=\"".htmlspecialchars($_SERVER["PHP_SELF"])."?n=".$_GET['n']."\">\n";
   foreach ($shuffledQuestionsData as $question){
     $questionIndex++;
     $questionNumber=array_search($question,$data['questions']);
-    $html .= "      <fieldset class=\"question\">\n      <legend>Question ".$questionIndex."</legend>\n";
-    $html .= "        <p>".$question['statement']."</p>\n";
+    $html .= "      <fieldset class=\"question\" data-type=\"".$question['answerType']."\">\n      <legend>Question ".$questionIndex."</legend>\n";
+    $html .= "        <p id=\"statement\">".$question['statement']."</p>\n";
     switch ($question['answerType']){
       case 'choices':
           $isFirst = true;
@@ -72,7 +72,7 @@ EOF;
         $html .= "        <input type=\"text\"  name=\"q".$questionNumber."\" class=\"textEntry\">";
       break;
     }
-    $html .= "        <button onclick=\"checkAnswer(".$questionNumber.")\" data-q-nr=\"".$questionNumber."\" data-type=\"".$question['answerType']."\">Vérifier</button>\n";
+    //$html .= "        <button onclick=\"checkAnswer(".$questionNumber.")\" data-q-nr=\"".$questionNumber."\" data-type=\"".$question['answerType']."\">Vérifier</button>\n";
     $html .= "      </fieldset>";
   }
   $html .= "<input type=\"hidden\" name=\"qcmName\" value=\"".$_GET['n']."\">";
@@ -80,27 +80,48 @@ EOF;
   $html .= <<<EOF
   <div id="result"></div>
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const formElm = document.getElementById('qcmForm');
-    
-    formElm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        try {
-          const formData = new FormData(formElm);
-          const rawResponse = await fetch('correction.php', {method: 'POST', body: formData});
-          const response = await rawResponse.json();
-
-          if (response.success === true) {
-              document.getElementById('result').innerText = "Your answer has been processed.";
-          } else {
-              document.getElementById('result').innerText = "An error occurred while processing your answer.";
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      });
-});
+  var selections = [];
+let i=0;
+document.querySelectorAll('fieldset.question').forEach(
+  (el)=>{
+    var q = el.querySelector('#statement');
+    var mc = [];
+    var c = "";
+    var selection = {}
+    switch (el.dataset.type){
+        case 'multiChoices':
+            el.querySelectorAll('input[type="checkbox"]:checked').forEach((e)=>{mc.push(e.value);});
+            selection={"question":q,"selectedAnswer":mc};
+            break;
+        case 'choice':
+            c = el.querySelector('input[type="radio"]:checked').value;
+            selection={"question":q,"selectedAnswer":c};
+            break;
+            //TODO : continue
+        case 'textEntry':
+            break;
+        case 'numericalValue':
+            break;
+    }    
+    selections.push(selection);
+  }
+)
+  fetch('correction.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+    body: JSON.stringify( selections )
+  })
+  //.then(response => response.json())
+  .then(data => {
+      console.log("Received data:", data);
+  //    // do something with the received data
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+  
 </script>
 </body>
 </html>
