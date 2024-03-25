@@ -2,21 +2,23 @@
     "title": "Questions de physique",
     "questions": [
         {
+            "id": 1,
             "answerType": "choices",
             "statement": "Qui a découvert la théorie de la relativité restreinte ?",
             "illustration": null,
-            "choices": [
-                "Albert Einstein",
+            "otherChoices": [
                 "Einsestein",
                 "Barack Obama"
             ],
+            "answer": "Albert Einstein",
             "tip": "C'était en 1915."
         },
         {
+            "id": 2,
             "answerType": "multiChoices",
             "statement": "Qui a été deux fois prix Nobel?",
             "illustration": null,
-            "correctChoices": [
+            "answer": [
                 "Marie Curie",
                 "John Bardeen"
             ],
@@ -28,6 +30,7 @@
             "tip": "Il faut réfléchir."
         },
         {
+            "id": 3,
             "answerType": "numericalValue",
             "statement": "En quelle année Isaac Newton publia les principia ?",
             "illustration": null,
@@ -35,6 +38,7 @@
             "tip": "C'est la première édition."
         },
         {
+            "id": 4,
             "answerType": "textEntry",
             "statement": "Quelle est le nom de la force qui vous maintient au sol ?",
             "illustration": null,

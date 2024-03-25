@@ -1,0 +1,25 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.question {
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    margin-top: 5px;
+}
+
+#results {
+    margin-top: 30px;
+    font-weight: bold;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}

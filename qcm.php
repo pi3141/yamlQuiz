@@ -3,38 +3,24 @@
 function init(){
   $qcm_name = $_GET["n"];
   $data = retrieveData($qcm_name);
-  $html = buildQCM($data);
+  $html = buildQCM($data, $qcm_name);
   dispPage($html);
 }
 
-function buildQCM($data){
+function buildQCM($data, $qcm_name){
   $html = <<<EOF
 <!DOCTYPE html>
 <html lang="fr">
-<head>
+<head> 
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
   <title>  
 EOF;
   $html .= $data['title'];
   $html .= <<<EOF
   </title>
-
-  <style>
-    body {
-    font-family: Arial, sans-serif;
-    }
-    .question {
-    margin-bottom: 30px;
-    }
-    label {
-    display: block;
-    margin-top: 5px;
-    }
-    #results {
-    margin-top: 30px;
-    font-weight: bold;
-    }
-  </style>
 </head>
 <body>
 
@@ -43,65 +29,41 @@ EOF;
   $questionIndex = 0;
   $shuffledQuestionsData = $data['questions'];
   shuffle($shuffledQuestionsData);
-  $html .= "    <form id=\"qcmForm\"method=\"POST\" action=".htmlspecialchars($_SERVER["PHP_SELF"])."?n=".$_GET['n'].">\n";
-  foreach ($shuffledQuestionsData as $question){
+  $html .= "    <form id=\"qcmForm\" data-name=\"" . $qcm_name . "\">\n";
+  foreach ($shuffledQuestionsData as $question){ 
     $questionIndex++;
-    $questionNumber=array_search($question,$data['questions']);
-    $html .= "      <fieldset class=\"question\">\n      <legend>Question ".$questionIndex."</legend>\n";
+    $questionNumber = $question['id'];
+    $questionId = 'q' . $questionNumber;
+    $html .= "      <fieldset class=\"question\" data-name=\"".$questionId."\">\n      <legend>Question ".$questionIndex."</legend>\n";
     $html .= "        <p>".$question['statement']."</p>\n";
     switch ($question['answerType']){
       case 'choices':
           $isFirst = true;
-          $choiceIndex = a;
-          foreach ($question['choices'] as $choice){
-            $html .= "        <label><input type=\"radio\" id=\"q".$questionNumber.$choiceIndex."\" name=\"q".$questionNumber."\" value=\"".$choice."\">".$choice."</label>\n";
-            $choiceIndex++;
+          $allChoices=array_merge([$question['answer']],$question['otherChoices']);
+          foreach ($allChoices as $choiceIndex => $choice){
+            $html .= "        <label><input type=\"radio\" id=\"q".$questionNumber.$choiceIndex."\" name=\"".$questionId."\" value=\"".$choice."\">".$choice."</label>\n";
           }
         break;
       case 'multiChoices':
-        $allChoices=array_merge($question['correctChoices'],$question['otherChoices']);
+        $allChoices=array_merge($question['answer'],$question['otherChoices']);
         shuffle($allChoices);
-        foreach ($allChoices as $choice){
-          $html .= "        <label><input type=\"checkbox\" id=\"q".$questionNumber.$choiceIndex."\" name=\"q".$questionNumber."\" value=\"".$choice."\">".$choice."</label>\n";
+        foreach ($allChoices as $choiceIndex => $choice){
+          $html .= "        <label><input type=\"checkbox\" id=\"q".$questionNumber.$choiceIndex."\" name=\"".$questionId."[]\" value=\"".$choice."\">".$choice."</label>\n";
         }
       break;
       case 'numericalValue':
-        $html .= "        <input type=\"text\" name=\"q".$questionNumber."\" class=\"numericalValue\">";
+        $html .= "        <input type=\"text\" name=\"".$questionId."\" class=\"numericalValue\">";
       break;
       case 'textEntry':
-        $html .= "        <input type=\"text\"  name=\"q".$questionNumber."\" class=\"textEntry\">";
+        $html .= "        <input type=\"text\"  name=\"".$questionId."\" class=\"textEntry\">";
       break;
     }
-    $html .= "        <button onclick=\"checkAnswer(".$questionNumber.")\" data-q-nr=\"".$questionNumber."\" data-type=\"".$question['answerType']."\">Vérifier</button>\n";
+    // $html .= "        <button onclick=\"checkAnswer(".$questionNumber.")\" data-q-nr=\"".$questionNumber."\" data-type=\"".$question['answerType']."\">Vérifier</button>\n";
     $html .= "      </fieldset>";
   }
-  $html .= "<input type=\"hidden\" name=\"qcmName\" value=\"".$_GET['n']."\">";
-  $html .= "      <button type=\"submit\">Valider</button>\n    </form>";
+  $html .= "      <button>Valider</button>\n    </form>";
   $html .= <<<EOF
   <div id="result"></div>
-  <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const formElm = document.getElementById('qcmForm');
-    
-    formElm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        try {
-          const formData = new FormData(formElm);
-          const rawResponse = await fetch('correction.php', {method: 'POST', body: formData});
-          const response = await rawResponse.json();
-
-          if (response.success === true) {
-              document.getElementById('result').innerText = "Your answer has been processed.";
-          } else {
-              document.getElementById('result').innerText = "An error occurred while processing your answer.";
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      });
-});
-</script>
 </body>
 </html>
 EOF;
