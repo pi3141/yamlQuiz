@@ -108,9 +108,6 @@ document.querySelectorAll('fieldset.question').forEach(
 )
   fetch('correction.php', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    },
     body: JSON.stringify( selections )
   })
   //.then(response => response.json())
