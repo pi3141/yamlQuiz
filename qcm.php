@@ -58,7 +58,7 @@ EOF;
         $html .= "        <input type=\"text\"  name=\"".$questionId."\" class=\"textEntry\">";
       break;
     }
-    // $html .= "        <button onclick=\"checkAnswer(".$questionNumber.")\" data-q-nr=\"".$questionNumber."\" data-type=\"".$question['answerType']."\">Vérifier</button>\n";
+    //$html .= "        <button onclick=\"checkAnswer(".$questionNumber.")\" data-q-nr=\"".$questionNumber."\" data-type=\"".$question['answerType']."\">Vérifier</button>\n";
     $html .= "      </fieldset>";
   }
   $html .= "      <button>Valider</button>\n    </form>";
