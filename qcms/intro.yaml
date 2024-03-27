@@ -1,0 +1,26 @@
+title: "Physics"
+questions:
+  - answerType: choices
+    statement: "Qui a découvert la théorie de la relativité ?"
+    illustration: #optional
+    choices: ["Albert Einstein", "Einsestein", "Barack Obama"] #the first one is the correct one.
+    tip: "It was a famous physicist."
+  - answerType: multiChoices
+    statement: "Qui a été président ?"
+    illustration: #optional
+    correctChoices: ["George Pompidou", "René Coty", "Barack Obama"]
+    otherChoices: ["George Floyd", "Mc Cain", "Ronald Mc Donald"]
+    tip: "Il faut réfléchir."
+  - answerType: numericalValue
+    statement: "How much is i² ?"
+    illustration: #optional
+    answer: -1 #-1,-1.0, … are corrects
+    tip: "i stand for imaginary number"
+  - answerType: textEntry
+    statement: "What force is holding you down ?"
+    illustration: #optional
+    answer:
+        - weight
+        - the weight
+    case-sensitive: false #default : false
+    tip: "Do not confuse with the mass which is related to the quantity of matter of an object."
